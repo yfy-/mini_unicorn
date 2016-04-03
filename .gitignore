@@ -4,3 +4,4 @@ target/
 .ensime
 #*
 *#
+src/main/resources/soc-pokec/

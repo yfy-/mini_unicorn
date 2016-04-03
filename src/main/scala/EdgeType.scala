@@ -1,4 +1,4 @@
-sealed trait EdgeType {
+sealed trait EdgeType extends Serializable{
   def name: String
   def isDirected: Boolean
   def src: VertexType
