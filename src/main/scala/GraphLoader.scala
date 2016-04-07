@@ -13,7 +13,7 @@ object GraphLoader extends Serializable {
 
     val adjPairs = adjLines.map { al =>
       val sp = al.split(";")
-      (sp(1).toInt, sp(0).toInt)  
+      (sp(1).toInt, sp(0).toInt)
     }.partitionBy(new HashPartitioner(numPartitions)).join(rankRdd).map { case (adj, (node, rank)) =>
         (Term(FriendEdge, node), List(Hit(DocId(PersonVertex, adj, rank), "")))
     }.partitionBy(new RandomPartitioner(numPartitions))

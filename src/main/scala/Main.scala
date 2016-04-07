@@ -8,11 +8,12 @@ object Main {
     val sc = new SparkContext(conf)
 
     val scGraph = GraphLoader.load(sc, "small-fake", 3)
-    val first = scGraph.term(Term(FriendEdge, 4))
-    val second = scGraph.term(Term(FriendEdge, 5))
-    val third = scGraph.term(Term(FriendEdge, 3))
-//    println(scGraph.and(List(first, second, third)).collect.mkString(", "))
-    println(scGraph.or(List(first, second, third)).collect.mkString(", "))
+    printPartitions(scGraph.postingLists)
+    val first = scGraph.term(Term(FriendEdge, 5))
+    println(first.collect.mkString(", "))
+    val second = scGraph.term(Term(FriendEdge, 1))
+    println(second.collect.mkString(", "))
+    println(scGraph.or(List(first, second)).collect.mkString(", "))
     sc.stop
   }
 
