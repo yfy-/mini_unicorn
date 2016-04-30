@@ -1,16 +1,15 @@
 lazy val root = (project in file(".")).
   settings(
     organization := "com.yfy", 
-    name := "mini-unicorn",
+    name := "mini_unicorn",
     version := "0.0.1",
     scalaVersion := "2.11.8"
   )
 
-//unmanagedResourceDirectories in Compile <++= baseDirectory { base =>
-//    Seq( base / "src/main/resources/small-fake", base /  "src/main/resources/soc-pokec")
-//}
+mappings in (Compile, packageBin) ~= { _.filter(!_._1.getName.endsWith(".csv")) }
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "1.6.1"
+  "org.apache.spark" %% "spark-core" % "1.6.1" % "provided",
+  "org.apache.spark" %% "spark-graphx" % "1.6.1" % "provided"
 )
 
