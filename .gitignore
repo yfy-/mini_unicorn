@@ -1,8 +1,6 @@
 target/
 *~
-.ensime_cache/
-.ensime
 #*
-*#
 src/main/resources/soc-pokec/
 src/main/resources/Slashdot0902/
+.idea/

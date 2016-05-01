@@ -15,7 +15,7 @@ object GraphLoader extends Serializable {
   private val fileExt = ".csv"
   private val yfyHome = "/home/yfy/scala-workspace/mini_unicorn"
 
-  def load(data: String): RDD[(Term, List[Hit])] = {
+  def load(data: String): RDD[(EdgeIdPair, List[Hit])] = {
     val sc = Config.sc
     val numPartitions = Config.numPartitions
 
@@ -25,7 +25,7 @@ object GraphLoader extends Serializable {
     val adjPairs = adjRdd.map { case (src, dest) => (dest, src) }.partitionBy(
       new HashPartitioner(numPartitions)).join(rankRdd).map
     { case (adj, (node, rank)) =>
-        (Term(FriendEdge, node), List(Hit(DocId(adj, rank), "")))
+        (EdgeIdPair(FriendEdge, node), List(Hit(DocId(adj, rank), "")))
     }.partitionBy(new RandomPartitioner(numPartitions))
 
     val mergedPairs = adjPairs.mapPartitions(it =>

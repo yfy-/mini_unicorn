@@ -4,7 +4,7 @@ import com.yfy.mini_unicorn.helpers.ListManipulator
 import com.yfy.mini_unicorn.types.VertexType
 import org.apache.spark.rdd.RDD
 
-abstract class Result(rddData: RDD[List[Hit]], vType: VertexType) extends Serializable with Parameterizable{
+abstract class Result(rddData: RDD[List[Hit]], vType: VertexType) extends Serializable{
   val vertexType = vType
   val rdd = rddData.cache
   val optCount: Int

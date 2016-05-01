@@ -1,27 +1,31 @@
 package com.yfy.mini_unicorn
 
-import com.yfy.mini_unicorn.operators.{AndOperator, TermOperator, WeakAndOperator}
+import com.yfy.mini_unicorn.operators._
 import com.yfy.mini_unicorn.types.FriendEdge
 
 object Main {
   def main(args: Array[String]): Unit = {
 
-    val firstTermOp = new TermOperator(Array(Term(FriendEdge, 1)))
-    val secondTermOp = new TermOperator(Array(Term(FriendEdge, 6)))
+    val one = EdgeIdPair(FriendEdge, 1)
+    val six = EdgeIdPair(FriendEdge, 6)
 
-    val first = firstTermOp.execute(0)
-    val second = secondTermOp.execute(0)
+    val andResult = new And(Array(new Term(one), new Term(six))).execute().collect
+    println("AND")
+    andResult.foreach(println)
 
-    val res = new AndOperator(Array(first, second)).execute(0)
+    val weakAndResult = new WeakAnd(new Term(one, weight = 0.2), new Term(six, count = 1)).
+      execute().collect
+    println("WEAK-AND")
+    weakAndResult.foreach(println)
 
-    res.collect.foreach(println)
+    val orResult = new Or(Array(new Term(one), new Term(six))).execute().collect
+    println("OR")
+    orResult.foreach(println)
 
-    val firstWeak = firstTermOp.execute(1)
-    val secondWeak = secondTermOp.execute(1)
-
-    val resWeak = new WeakAndOperator(Array(firstWeak, secondWeak)).execute(0)
-
-    resWeak.collect.foreach(println)
+    val strongOrResult = new StrongOr(new Term(one, weight = 0.1), new Term(six, weight = 0.6)).
+      execute().collect
+    println("STRONG-OR")
+    strongOrResult.foreach(println)
 
     scala.io.StdIn.readLine
 

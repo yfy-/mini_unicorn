@@ -1,17 +1,17 @@
 package com.yfy.mini_unicorn.helpers
 
 import com.yfy.mini_unicorn.partitioners.RandomPartitioner
-import com.yfy.mini_unicorn.{Config, Hit}
+import com.yfy.mini_unicorn._
 import org.apache.spark.rdd.RDD
 
 /**
   * Created by yfy on 5/1/16.
   */
-trait AndHelper {
+trait OperatorHelper {
 
   protected def cogroupRdds(
-                firstRdd: RDD[List[Hit]],
-                secondRdd: RDD[List[Hit]]): RDD[(Null, (List[Hit], List[Hit]))] = {
+                 firstRdd: RDD[List[Hit]],
+                 secondRdd: RDD[List[Hit]]): RDD[(Null, (List[Hit], List[Hit]))] = {
 
     firstRdd.map((null, _)).cogroup(secondRdd.map((null, _))).map {
       case (null, (first: Iterable[List[Hit]], second: Iterable[List[Hit]])) =>
@@ -23,9 +23,9 @@ trait AndHelper {
 
   // Lists can contain duplicate elements, does not effect the result of queries.
   protected def findDesiredInBoth(
-                firstRdd: RDD[List[Hit]],
-                secondRdd: RDD[List[Hit]],
-                desired: RDD[(Null, List[Hit])]): RDD[List[Hit]] = {
+                                   firstRdd: RDD[List[Hit]],
+                                   secondRdd: RDD[List[Hit]],
+                                   desired: RDD[(Null, List[Hit])]): RDD[List[Hit]] = {
 
     val combined = firstRdd.zipPartitions(secondRdd, preservesPartitioning = true)((f, s) =>
       ListManipulator.mergeIteratorsSorted(f, s)

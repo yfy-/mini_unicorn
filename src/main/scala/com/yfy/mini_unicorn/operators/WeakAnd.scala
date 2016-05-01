@@ -7,25 +7,23 @@ import com.yfy.mini_unicorn.helpers._
 /**
   * Created by yfy on 5/1/16.
   */
-class WeakAndOperator(params: Array[Parameterizable]) extends Operator with AndHelper{
+class WeakAnd(
+       firstParam: Operator,
+       secondParam: Operator,
+       count: Int = 0,
+       weight: Double = 0.0) extends Operator(count, weight) with OperatorHelper{
 
-  override val parameters: Array[Parameterizable] = params
+  override def execute(): Result = {
+    val first = firstParam.execute()
+    val second = secondParam.execute()
 
-  override def execute(count: Int): CountResult = {
-    val first = retrieveParameter(parameters(0))
-    val second = retrieveParameter(parameters(1))
+    if (weight == 0.0) return CountResult(weakAnd(first, second), first.vertexType, count)
+    if (count == 0) return WeightResult(weakAnd(first, second), first.vertexType, weight)
 
-    CountResult(weakAndInternal(first, second), first.vertexType, count)
+    operatorWithCountAndWeight
   }
 
-  override def execute(weight: Double): WeightResult = ???
-
-  private def retrieveParameter(p: Parameterizable): Result = p match {
-    case r: Result => r
-    case _ => throw new Exception("Invalid Parameter")
-  }
-
-  private def weakAndInternal(first: Result, second: Result): RDD[List[Hit]] = {
+  private def weakAnd(first: Result, second: Result): RDD[List[Hit]] = {
     if (first.vertexType != second.vertexType) throw
       new Exception("Incompatible types " + first.vertexType + ", " + second.vertexType)
 

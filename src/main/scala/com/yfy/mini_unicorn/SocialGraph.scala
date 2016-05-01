@@ -6,7 +6,7 @@ object SocialGraph extends Serializable {
   val postingLists = GraphLoader.load("Slashdot0902").cache
 }
 
-case class Term(eType: EdgeType, id: Int) extends Serializable with Parameterizable
+case class EdgeIdPair(eType: EdgeType, id: Int) extends Serializable with Parameterizable
 
 case class DocId(id: Int, var rank: Double) extends Serializable
 

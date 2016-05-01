@@ -1,6 +1,6 @@
 package com.yfy.mini_unicorn.helpers
 
-import com.yfy.mini_unicorn.Hit
+import com.yfy.mini_unicorn.{Config, Hit}
 import scala.util.control.Breaks._
 
 /**
@@ -32,6 +32,24 @@ object ListManipulator {
     }
 
     res.toList
+  }
+
+  def strongOr(first: List[Hit], second: List[Hit], fWeight: Double, sWeight: Double): List[Hit] = {
+    if ((first ++ second).distinct.size > Config.truncationLimit) {
+      val fDefiniteCount = (Config.truncationLimit * fWeight).asInstanceOf[Int]
+      val sDefiniteCount = (Config.truncationLimit * sWeight).asInstanceOf[Int]
+
+      val firstSplitted = first.splitAt(fDefiniteCount)
+      val secondSplitted = second.splitAt(sDefiniteCount)
+
+      val definite = mergeSorted(firstSplitted._1, secondSplitted._1).distinct
+      val maybe = mergeSorted(firstSplitted._2, secondSplitted._2).distinct
+      val truncated = maybe.diff(definite).take(Config.truncationLimit - definite.size)
+
+      mergeSorted(definite, truncated)
+
+    } else
+      mergeSorted(first, second).distinct
   }
 
   def mergeIteratorsSorted(
