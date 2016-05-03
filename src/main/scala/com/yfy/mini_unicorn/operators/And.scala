@@ -11,29 +11,45 @@ class And(parameters: Array[Operator], count: Int = 0, weight: Double = 0.0) ext
   Operator(count, weight) with OperatorHelper{
 
   override def execute(): Result = {
-    val first = parameters(0).execute()
-    val second = parameters(1).execute()
+    val results = parameters.map(_.execute())
 
-    if (weight == 0.0) return CountResult(and(first, second), first.vertexType, count)
-    if (count == 0) return WeightResult(and(first, second), first.vertexType, weight)
+    if (weight == 0.0) {
+      val intermediate = results.reduceLeft { (x, y) =>
+        validate(x, y)
+        CountResult(and(x.rdd, y.rdd), x.vertexType, 0)
+      }
+
+      return CountResult(intermediate.rdd, intermediate.vertexType, count)
+    }
+
+    if (count == 0.0) {
+      val intermediate = results.reduceLeft { (x, y) =>
+        validate(x, y)
+        WeightResult(and(x.rdd, y.rdd), x.vertexType, 0.0)
+      }
+
+      return WeightResult(intermediate.rdd, intermediate.vertexType, weight)
+    }
 
     operatorWithCountAndWeight
   }
 
-  private def and(first: Result, second: Result): RDD[List[Hit]] = {
-    if (first.vertexType != second.vertexType) throw
-      new Exception("Incompatible types " + first.vertexType + ", " + second.vertexType)
-
-    if (first.optCount > 0 || second.optCount > 0) throw
-      new Exception("and operator does not take optional count or weight")
-
-    val cogrouped = cogroupRdds(first.rdd, second.rdd)
+  private def and(first: RDD[List[Hit]], second: RDD[List[Hit]]): RDD[List[Hit]] = {
+    val cogrouped = cogroupRdds(first, second)
 
     val desired: RDD[(Null, List[Hit])] = cogrouped.map {
       case (null, (first: List[Hit], second: List[Hit])) =>
         (null, ListManipulator.intersect(first, second))
     }.mapValues(_.take(Config.truncationLimit))
 
-    findDesiredInBoth(first.rdd, second.rdd, desired)
+    findDesiredInBoth(first, second, desired)
+  }
+
+  private def validate(first: Result, second: Result): Unit = {
+    if (first.vertexType != second.vertexType) throw
+      new Exception("Incompatible types " + first.vertexType + ", " + second.vertexType)
+
+    if (first.optCount > 0 || second.optCount > 0) throw
+      new Exception("and operator does not take optional count or weight")
   }
 }

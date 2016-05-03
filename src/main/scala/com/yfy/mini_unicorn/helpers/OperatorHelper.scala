@@ -23,9 +23,9 @@ trait OperatorHelper {
 
   // Lists can contain duplicate elements, does not effect the result of queries.
   protected def findDesiredInBoth(
-                                   firstRdd: RDD[List[Hit]],
-                                   secondRdd: RDD[List[Hit]],
-                                   desired: RDD[(Null, List[Hit])]): RDD[List[Hit]] = {
+                firstRdd: RDD[List[Hit]],
+                secondRdd: RDD[List[Hit]],
+                desired: RDD[(Null, List[Hit])]): RDD[List[Hit]] = {
 
     val combined = firstRdd.zipPartitions(secondRdd, preservesPartitioning = true)((f, s) =>
       ListManipulator.mergeIteratorsSorted(f, s)

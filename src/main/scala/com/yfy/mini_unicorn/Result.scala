@@ -12,7 +12,10 @@ abstract class Result(rddData: RDD[List[Hit]], vType: VertexType) extends Serial
   def collect: Array[Hit] = keyWithNullAndMerge.mapValues(_.distinct).flatMap(_._2).collect
 
   private def keyWithNullAndMerge: RDD[(Null, List[Hit])] = {
-    rdd.map((null, _)).reduceByKey((x, y) => ListManipulator.mergeSorted(x, y), Config.numPartitions)
+    val result = rdd.map((null, _)).reduceByKey((x, y) =>
+      ListManipulator.mergeSorted(x, y), Config.numPartitions)
+    rdd.unpersist()
+    result
   }
 }
 
