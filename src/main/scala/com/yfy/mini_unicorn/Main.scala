@@ -15,13 +15,14 @@ object Main {
     andResult.foreach(println)
     scala.io.StdIn.readLine
 
+    // (weak-and (friend:5 opt-weight: 0.2) (friend:6 opt-count: 1))
     val weakAndResult = new WeakAnd(new Term(one, weight = 0.2), new Term(six, count = 1)).
       execute().collect
     println("WEAK-AND")
     weakAndResult.foreach(println)
     scala.io.StdIn.readLine
 
-    val orResult = new Or(Array(new Term(one), new Term(six), new Term(fortyone))).execute().collect
+    val orResult = new Or(Array(new Term(one), new Term(six))).execute().collect
     println("OR")
     orResult.foreach(println)
     scala.io.StdIn.readLine
@@ -40,7 +41,7 @@ object Main {
     complexResult.foreach(println)
     scala.io.StdIn.readLine
 
-    val applyResult = new Apply(FriendEdge, new Term(EdgeIdPair(FriendEdge, 20))).execute().collect
+    val applyResult = new Apply(FriendEdge, new Term(EdgeIdPair(FriendEdge, 37))).execute().collect
 
     println("APPLY")
     applyResult.foreach(println)

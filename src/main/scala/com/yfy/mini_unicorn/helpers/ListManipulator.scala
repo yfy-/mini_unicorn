@@ -1,37 +1,41 @@
 package com.yfy.mini_unicorn.helpers
 
 import com.yfy.mini_unicorn.{Config, Hit}
-import scala.util.control.Breaks._
 
 /**
   * Created by yfy on 5/1/16.
   */
 object ListManipulator {
 
-  def mergeSorted(x: List[Hit], y: List[Hit]): List[Hit] = {
-    if (x.isEmpty) return y
+  def mergeSorted(l1: List[Hit], l2: List[Hit]): List[Hit] = {
+    mergeSorted(l1, l2, List.empty[Hit])
+  }
 
-    if (y.isEmpty) return x
+  private def mergeSorted(l1: List[Hit], l2: List[Hit], result: List[Hit]): List[Hit] = {
+    if (l1.isEmpty) return result ++ l2
 
-    if (x.head.docId.rank >= y.head.docId.rank) {
-      x.head :: mergeSorted(x.tail, y)
+    if (l2.isEmpty) return result ++ l1
+
+    if (l1.head.docId < l2.head.docId) {
+      mergeSorted(l1.tail, l2, result :+ l1.head)
     } else {
-      y.head :: mergeSorted(x, y.tail)
+      mergeSorted(l1, l2.tail, result :+ l2.head)
     }
   }
 
-  def intersect(first: List[Hit], second: List[Hit]): List[Hit] = {
-    var res = scala.collection.mutable.ListBuffer.empty[Hit]
-    for (f <- first) {
-      breakable {
-        for (s <- second) {
-          if (f == s) res += f
-          if (f.docId.rank > s.docId.rank) break
-        }
-      }
-    }
+  def intersect(l1: List[Hit], l2: List[Hit]): List[Hit] = {
+    intersect(l1, l2, List.empty[Hit])
+  }
 
-    res.toList
+  private def intersect(l1: List[Hit], l2: List[Hit], result: List[Hit]): List[Hit] = {
+    if (l1.isEmpty || l2.isEmpty)
+      return result
+    if (l1.head.docId == l2.head.docId)
+      return intersect(l1.tail, l2.tail, result :+ l1.head)
+    if (l1.head.docId < l2.head.docId)
+      return intersect(l1.tail, l2, result)
+
+    intersect(l1, l2.tail, result)
   }
 
   def strongOr(first: List[Hit], second: List[Hit], fWeight: Double, sWeight: Double): List[Hit] = {

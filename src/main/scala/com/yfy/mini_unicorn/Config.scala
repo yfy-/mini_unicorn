@@ -7,7 +7,7 @@ object Config {
   val conf = new SparkConf()
   val sc = new SparkContext(conf)
   val numPartitions = 8
-  val truncationLimit = 100
+  val truncationLimit = 10
 
   def printPartitions(rdd: RDD[_], first: Int = 100): Unit = {
     rdd.mapPartitionsWithIndex((index, it) =>

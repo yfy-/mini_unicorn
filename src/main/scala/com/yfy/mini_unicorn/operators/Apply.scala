@@ -15,7 +15,7 @@ class Apply(
     val terms: Array[Operator] = secondParam.execute().collect.map(x =>
       new Term(EdgeIdPair(firstParam, x.docId.id)))
 
-    val applyResult = new Or(terms).execute()
+    val applyResult = new Or(terms.take(100)).execute()
 
     if (weight == 0.0) return CountResult(applyResult.rdd, applyResult.vertexType, count)
     if (count == 0) return WeightResult(applyResult.rdd, applyResult.vertexType, weight)

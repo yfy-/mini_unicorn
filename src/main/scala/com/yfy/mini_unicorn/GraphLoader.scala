@@ -28,9 +28,9 @@ object GraphLoader extends Serializable {
         (EdgeIdPair(FriendEdge, node), List(Hit(DocId(adj, rank), "")))
     }.partitionBy(new RandomPartitioner(numPartitions))
 
-    val mergedPairs = adjPairs.mapPartitions(it =>
+    val mergedPairs: RDD[(EdgeIdPair, List[Hit])] = adjPairs.mapPartitions(it =>
       it.toList.groupBy(x => x._1). map { case (k, v) =>
-        (k, v.flatMap(_._2).sortBy(_.docId.rank)(Ordering[Double].reverse)) }.iterator,
+        (k, v.flatMap(_._2).sortBy(_.docId)(DocIdOrdering)) }.iterator,
       preservesPartitioning = true)
 
     mergedPairs

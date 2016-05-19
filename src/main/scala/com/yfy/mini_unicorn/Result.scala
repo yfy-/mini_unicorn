@@ -8,7 +8,6 @@ abstract class Result(rddData: RDD[List[Hit]], vType: VertexType) extends Serial
   val vertexType = vType
   val rdd = rddData.cache
   val optCount: Int
-
   def collect: Array[Hit] = keyWithNullAndMerge.mapValues(_.distinct).flatMap(_._2).collect
 
   private def keyWithNullAndMerge: RDD[(Null, List[Hit])] = {
